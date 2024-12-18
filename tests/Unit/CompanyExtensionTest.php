@@ -2,11 +2,21 @@
 
 namespace Xefi\Faker\EnGb\Tests\Unit;
 
-use Xefi\Faker\Calculators\Luhn;
-use Xefi\Faker\Container\Container;
+use Random\Randomizer;
+use Xefi\Faker\EnGb\Extensions\CompanyExtension;
 
 final class CompanyExtensionTest extends TestCase
 {
+    protected array $companies = [];
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $companyExtension = new CompanyExtension(new Randomizer());
+        $this->companies = (new \ReflectionClass($companyExtension))->getProperty('companies')->getValue($companyExtension);
+    }
+
     public function testVatNumber()
     {
         $results = [];
@@ -36,5 +46,18 @@ final class CompanyExtensionTest extends TestCase
                 $this->fail('Unexpected company registration number format: ' . $result);
             }
         }
+    }
+
+    public function testCompany()
+    {
+        $results = [];
+        for ($i = 0; $i < count($this->companies); $i++) {
+            $results[] = $this->faker->unique()->company();
+        }
+
+        $this->assertEqualsCanonicalizing(
+            $this->companies,
+            $results
+        );
     }
 }

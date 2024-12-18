@@ -36,7 +36,48 @@ class AddressExtension extends Extension
     ];
 
     protected $regions = [
-        'England', 'Scotland', 'Wales', 'Northern Ireland',
+        // ENG - England (regions)
+        'East Midlands', 'East of England', 'London', 'North East', 'North West',
+        'South East', 'South West', 'West Midlands', 'Yorkshire and the Humber',
+
+        // SCT - Scotland (Council Areas)
+        'Aberdeenshire', 'Angus', 'Argyll and Bute', 'Clackmannanshire',
+        'Dumfries and Galloway', 'Dundee', 'East Ayrshire', 'East Dunbartonshire',
+        'East Lothian', 'East Renfrewshire', 'Edinburgh', 'Falkirk', 'Fife',
+        'Glasgow', 'Highland', 'Inverclyde', 'Midlothian', 'Moray',
+        'North Ayrshire', 'North Lanarkshire', 'Orkney Islands', 'Perth and Kinross',
+        'Renfrewshire', 'Scottish Borders', 'Shetland Islands', 'South Ayrshire',
+        'South Lanarkshire', 'Stirling', 'West Dunbartonshire', 'West Lothian',
+
+        // WLS - Wales (Principal Areas)
+        'Blaenau Gwent', 'Bridgend', 'Caerphilly', 'Cardiff', 'Carmarthenshire',
+        'Ceredigion', 'Conwy', 'Denbighshire', 'Flintshire', 'Gwynedd',
+        'Isle of Anglesey', 'Merthyr Tydfil', 'Monmouthshire', 'Neath Port Talbot',
+        'Newport', 'Pembrokeshire', 'Powys', 'Rhondda Cynon Taf', 'Swansea',
+        'Torfaen', 'Vale of Glamorgan', 'Wrexham',
+
+        // NI - Northern Ireland (Local Government Districts)
+        'Antrim and Newtownabbey', 'Ards and North Down', 'Armagh, Banbridge and Craigavon',
+        'Belfast', 'Causeway Coast and Glens', 'Derry and Strabane',
+        'Fermanagh and Omagh', 'Lisburn and Castlereagh', 'Mid and East Antrim',
+        'Mid Ulster', 'Newry, Mourne and Down'
+    ];
+
+    protected $cities = [
+        'London', 'Birmingham', 'Manchester', 'Leeds', 'Glasgow', 'Liverpool', 'Newcastle', 'Sheffield',
+        'Bristol', 'Edinburgh', 'Cardiff', 'Belfast', 'Nottingham', 'Leicester', 'Coventry', 'Hull',
+        'Stoke-on-Trent', 'Southampton', 'Reading', 'Aberdeen', 'Cambridge', 'Oxford', 'Plymouth',
+        'Derby', 'Exeter', 'Brighton', 'Norwich', 'York', 'Swansea', 'Wolverhampton', 'Portsmouth',
+        'Dundee', 'Blackpool', 'Luton', 'Milton Keynes'
+    ];
+
+    protected $streetNames = [
+        'High Street', 'Station Road', 'Church Lane', 'Park Avenue', 'London Road', 'Victoria Street',
+        'Green Lane', 'King\'s Road', 'Queen\'s Avenue', 'Elm Street', 'The Crescent', 'York Road',
+        'Main Street', 'Market Place', 'Mill Lane', 'School Lane', 'Chester Avenue', 'Parkside',
+        'Brook Street', 'Grange Road', 'Hilltop', 'Bridge Street', 'New Street', 'Church Road',
+        'Oakwood Drive', 'Maple Close', 'Meadow View', 'Waterloo Road', 'Clarence Street', 'Beechwood Avenue',
+        'West End', 'Northgate', 'Eastfield Road', 'Southfield Drive'
     ];
 
     public function region(): string
@@ -47,5 +88,61 @@ class AddressExtension extends Extension
     public function county(): array
     {
         return $this->pickArrayRandomElement($this->counties);
+    }
+
+    public function city(): string
+    {
+        return $this->pickArrayRandomElement($this->cities);
+    }
+
+    public function streetName(): string
+    {
+        return $this->pickArrayRandomElement($this->streetNames);
+    }
+
+    public function streetAddress(): string
+    {
+        return sprintf('%d %s', $this->houseNumber(), $this->streetName());
+    }
+
+    public function houseNumber(): int
+    {
+        return $this->randomizer->getInt(1, 200);
+    }
+
+    public function postcode(): string
+    {
+        $prefixLetters = $this->randomizer->getInt(0, 1) === 0
+            ? chr($this->randomizer->getInt(65, 90))
+            : chr($this->randomizer->getInt(65, 90)) . chr($this->randomizer->getInt(65, 90));
+
+        $prefixDigits = $this->randomizer->getInt(0, 2);
+        switch ($prefixDigits) {
+            case 0:
+                $middlePart = $this->randomizer->getInt(1, 9);
+                break;
+            case 1:
+                $middlePart = $this->randomizer->getInt(1, 9) . $this->randomizer->getInt(0, 9);
+                break;
+            case 2:
+                $middlePart = $this->randomizer->getInt(1, 9) . chr($this->randomizer->getInt(65, 90));
+                break;
+        }
+
+        $suffix = $this->randomizer->getInt(0, 9) . chr($this->randomizer->getInt(65, 90)) . chr($this->randomizer->getInt(65, 90));
+
+        return sprintf('%s%s %s', $prefixLetters, $middlePart, $suffix);
+    }
+
+    public function fullAddress(): string
+    {
+        return sprintf(
+            '%d %s, %s, %s, %s',
+            $this->houseNumber(),
+            $this->streetName(),
+            $this->city(),
+            array_values($this->county())[0],
+            $this->postcode()
+        );
     }
 }
