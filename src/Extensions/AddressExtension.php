@@ -6,6 +6,11 @@ use Xefi\Faker\Extensions\Extension;
 
 class AddressExtension extends Extension
 {
+    public function getLocale(): string|null
+    {
+        return 'en_GB';
+    }
+
     protected $counties = [
         ['ENG' => 'Bedfordshire'], ['ENG' => 'Berkshire'], ['ENG' => 'Bristol'], ['ENG' => 'Buckinghamshire'],
         ['ENG' => 'Cambridgeshire'], ['ENG' => 'Cheshire'], ['ENG' => 'Cornwall'], ['ENG' => 'Cumbria'],
