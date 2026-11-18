@@ -19,8 +19,7 @@ class FinancialExtension extends BaseFinancialExtension
 
         if ($format === null) {
             $format = sprintf(
-                '%s%s%s%s',
-                str_repeat('{d}', 2),  // Check digits
+                '%s%s%s',
                 str_repeat('{l}', 4),  // Bank code (letters)
                 str_repeat('{d}', 6),  // Sort code (digits)
                 str_repeat('{d}', 8)   // Account number (digits)

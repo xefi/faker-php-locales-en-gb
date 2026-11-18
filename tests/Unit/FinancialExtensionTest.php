@@ -10,7 +10,7 @@ final class FinancialExtensionTest extends TestCase
     {
         $iban = $this->faker->iban();
 
-        $this->assertEquals(24, strlen($iban));
+        $this->assertMatchesRegularExpression('/^GB\d{2}[A-Z]{4}\d{14}$/', $iban);
         $this->assertStringStartsWith('GB', $iban);
         $this->assertTrue(Iban::isValid($iban));
     }
